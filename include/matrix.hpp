@@ -31,6 +31,16 @@ class Matrix {
     int m_cols = 0;
     /* Continous array */
     T* m_data = nullptr;
+
+    struct ProxyMatrix {
+        T* m_row;
+        const T& operator[](int col) const {
+            // extremely ugly
+            return *( (T*) ((char*) m_row + (col - 1) * sizeof(T))); 
+        }
+
+        ProxyMatrix(T* row): m_row(row) {};
+    };
     
 public: 
     Matrix(int rows = 0, int cols = 0);
@@ -48,7 +58,9 @@ public:
     }
 
     Matrix<T>& operator+=(const Matrix<T>& rhs);
-    T* operator[](int n) const;
+    ProxyMatrix operator[](int row) const {
+        return ProxyMatrix( (T*) ((char*) m_data + (row - 1) * m_cols * sizeof(T)));
+    }
 
     ~Matrix() {
         #ifndef RAW_ALLOCATION
@@ -60,13 +72,6 @@ public:
     void dump();
 };
 
-T*::operator[](const Matrix<T>& rhs) {
-    return rhs.get_elem()
-}
-
-T*::operator[](const Matrix<T>* rhs) {
-    
-}
 
 // Matrix<T>&::Matrix<T> operator+=(const Matrix<T> rhs) {
 //     int l_rows = lhs.get_rows();
