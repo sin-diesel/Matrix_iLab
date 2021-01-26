@@ -83,6 +83,20 @@ TEST(Matrix, Matrix_braces_op) {
     ASSERT_EQ(m1[2][2], 5);
 }
 
+TEST(Matrix, Matrix_add_op) {
+    std::vector<int> v = {2, 1, 1, 5};
+    Matrix<int> m1(2, 2, v.begin(), v.end());
+
+    std::vector<int> v2 = {5, 5, 5, 5};
+    Matrix<int> m2(2, 2, v2.begin(), v2.end());
+    
+    std::vector<int> v3 = {7, 6, 6, 10};
+    Matrix<int> m3(2, 2, v3.begin(), v3.end());
+
+    m2 += m1;
+    ASSERT_EQ(m2, m3);
+}
+
 int main(int argc, char** argv) {
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

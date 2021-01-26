@@ -34,7 +34,7 @@ class Matrix {
 
     struct ProxyMatrix {
         T* m_row;
-        const T& operator[](int col) const {
+        T& operator[](int col) {
             // extremely ugly
             return *( (T*) ((char*) m_row + (col - 1) * sizeof(T))); 
         }
@@ -72,24 +72,27 @@ public:
     void dump();
 };
 
+template<typename T>
+Matrix<T>& Matrix<T>::operator+=(const Matrix<T>& rhs) {
+    int l_rows = get_rows();
+    int l_cols = get_cols();
+    int r_rows = rhs.get_rows();
+    int r_cols = rhs.get_cols();
 
-// Matrix<T>&::Matrix<T> operator+=(const Matrix<T> rhs) {
-//     int l_rows = lhs.get_rows();
-//     int l_cols = lhs.get_cols();
-//     int r_rows = lhs.get_rows();
-//     int r_cols = rhs.get_cols();
+    if (l_rows != r_rows || l_cols != r_cols) {
+        // a good idea to throw exception?
+        throw std::exception();
+    }
 
-//     if (l_rows != r_rows || l_cols != r_cols) {
-//         // a good idea to throw exception?
-//         throw std::exception();
-//     }
-
-//     for (int i = 1; i <= l_rows; ++i) {
-//         for (int j = 1; j <= r_rows; ++j) {
-            
-//         }
-//     }
-// }
+    for (int i = 1; i <= l_rows; ++i) {
+        for (int j = 1; j <= r_rows; ++j) {
+            T* l_elem = get_elem(i, j);
+            T* r_elem = rhs.get_elem(i, j);
+            *l_elem += *r_elem;
+        }
+    }
+    return *this;
+}
 
 template<typename T>
 template<typename It> // why?
