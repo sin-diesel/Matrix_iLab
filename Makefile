@@ -10,10 +10,10 @@ OBJECTS = $(SOURCES:.cpp=.o)
 .PHONY: all tests matrix
 all:
 	$(CPP) $(CPPFLAGS) $(SRC_DIR)/main.cpp -o matrix
-	$(CPP) $(CPPFLAGS) $(SRC_DIR)/unit_tests.cpp -o tests
+	$(CPP) $(CPPFLAGS) $(SRC_DIR)/unit_tests.cpp -o test
 
 tests:
-	$(CPP) $(CPPFLAGS) $(SRC_DIR)/unit_tests.cpp -o tests
+	$(CPP) $(CPPFLAGS) $(SRC_DIR)/unit_tests.cpp -o test
 
 matrix:
 	$(CPP) $(CPPFLAGS) $(SRC_DIR)/main.cpp -o matrix

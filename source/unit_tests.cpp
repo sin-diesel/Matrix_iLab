@@ -3,7 +3,7 @@
 
 
 TEST(Matrix, Matrix_rowcol_constructor) {
-    Matrix<int> m1{5, 6};
+    Matrix<int> m1{5, 6, 56};
     D(m1.dump());
     Matrix<int> m2{2, 3};
     D(m2.dump());
@@ -102,10 +102,10 @@ TEST(Matrix, Matrix_copy_constructor) {
     Matrix<int> m1(2, 2, v1.begin(), v1.end());
 
     Matrix<int> m2 = m1;
-    D(m1.dump();)
+    D(m1.dump());
     // std::cout << "Matrix m1 buf: " << m1. << std::endl;
     // std::cout << "Matrix m2 buf: " << std::endl;
-    D(m2.dump();)
+    D(m2.dump());
     ASSERT_EQ(m1, m2);
 }
 
@@ -151,6 +151,53 @@ TEST(Matrix, Matrix_combined_ops) {
     Matrix<int> m(2, 2);
 
     ASSERT_EQ(m, m4);
+}
+
+TEST(Matrix, Matrix_mult_by_num) {
+    std::vector<int> v1 = {1, -1, -1, 1};
+    Matrix<int> m1(2, 2, v1.begin(), v1.end());
+
+    std::vector<int> v2 = {2, -2, -2, 2};
+    Matrix<int> m2(2, 2, v2.begin(), v2.end());
+
+    Matrix<int> m3 = m1 * 2;
+    D(m3.dump());
+    Matrix<int> m4 = 2 * m1;
+    D(m4.dump());
+
+    ASSERT_EQ(m3, m2);
+    ASSERT_EQ(m4, m2);
+}
+
+TEST(Matrix, Matrix_sub_op) {
+    std::vector<int> v1 = {2, -2, -2, 2};
+    Matrix<int> m1(2, 2, v1.begin(), v1.end());
+    D(m1.dump());
+
+    std::vector<int> v2 = {1, 1, 1, 1};
+    Matrix<int> m2(2, 2, v2.begin(), v2.end());
+    D(m2.dump());
+
+    std::vector<int> v3 = {1, -3, -3, 1};
+    Matrix<int> m3(2, 2, v3.begin(), v3.end());
+    D(m3.dump());
+
+    m1 -= m2;
+    D(m1.dump());
+    ASSERT_EQ(m1, m3);
+}
+
+TEST(Matrix, Matrix_transpose) {
+    std::vector<int> v1 = {1, 0, 1, 2};
+    Matrix<int> m1(2, 2, v1.begin(), v1.end());
+
+    std::vector<int> v2 = {1, 1, 0, 2};
+    Matrix<int> m2(2, 2, v2.begin(), v2.end());
+
+    D(m1.dump());
+    m1.transpose();
+    D(m1.dump());
+    ASSERT_EQ(m1, m2);
 }
 
 int main(int argc, char** argv) {
