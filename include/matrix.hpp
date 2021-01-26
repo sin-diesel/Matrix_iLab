@@ -3,7 +3,7 @@
 #include <iostream>
 #include <iomanip>
 
-#define DEBUG true
+#define DEBUG false
 
 #define D(stmt) if (DEBUG) {stmt;}
 
@@ -89,12 +89,15 @@ void swap(T* a, T* b) {
 
 template<typename T>
 void Matrix<T>::transpose() {
+    int diag = 1;
     for (int i = 1; i <= m_rows; ++i) {
-        for (int j = 1; j <= m_cols; ++j) {
+        for (int j = diag; j <= m_cols; ++j) {
             T* elem_1 = get_elem(i, j);
             T* elem_2 = get_elem(j, i);
+            D(std::cout << "Swapping " << *elem_1 << " and " << *elem_2 << std::endl;)
             swap(elem_1, elem_2);
         }
+        ++diag;
     }
 }
 
@@ -200,7 +203,8 @@ template<typename T>
 template<typename It> // why?
 Matrix<T>::Matrix(int rows, int cols, It begin, It end): Matrix(rows, cols) {
     int dist = std::distance(begin, end);
-    if (rows + cols != dist) {
+    D(std::cout << "Distance: " << dist << std::endl);
+    if (rows * cols != dist) {
         throw std::exception();
     }
 

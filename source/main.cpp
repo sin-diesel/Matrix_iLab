@@ -10,7 +10,7 @@ int main(int argc, char** argv) {
     int N = 0;
     std::vector<int> elems;
     std::cin >> N;
-    for (int i = 0; i < N; ++i) {
+    for (int i = 0; i < N * N; ++i) {
         int elem = 0;
         std::cin >> elem;
         elems.push_back(elem);
