@@ -89,12 +89,68 @@ TEST(Matrix, Matrix_add_op) {
 
     std::vector<int> v2 = {5, 5, 5, 5};
     Matrix<int> m2(2, 2, v2.begin(), v2.end());
-    
+
     std::vector<int> v3 = {7, 6, 6, 10};
     Matrix<int> m3(2, 2, v3.begin(), v3.end());
 
     m2 += m1;
     ASSERT_EQ(m2, m3);
+}
+
+TEST(Matrix, Matrix_copy_constructor) {
+    std::vector<int> v1 = {2, 1, 1, 5};
+    Matrix<int> m1(2, 2, v1.begin(), v1.end());
+
+    Matrix<int> m2 = m1;
+    D(m1.dump();)
+    // std::cout << "Matrix m1 buf: " << m1. << std::endl;
+    // std::cout << "Matrix m2 buf: " << std::endl;
+    D(m2.dump();)
+    ASSERT_EQ(m1, m2);
+}
+
+TEST(Matrix, Matrix_add_bin_op) {
+    std::vector<int> v1 = {2, 1, 1, 5};
+    Matrix<int> m1(2, 2, v1.begin(), v1.end());
+
+    std::vector<int> v2 = {0, -1, 1, 1};
+    Matrix<int> m2(2, 2, v2.begin(), v2.end());
+
+    std::vector<int> v3 = {2, 0, 2, 6};
+    Matrix<int> m3(2, 2, v3.begin(), v3.end());
+
+    Matrix<int> m4 = m1 + m2;
+
+    ASSERT_EQ(m4, m3);
+}
+
+TEST(Matrix, Matrix_negate_op) {
+    std::vector<int> v1 = {2, 1, 1, 5};
+    Matrix<int> m1(2, 2, v1.begin(), v1.end());
+
+    std::vector<int> v2 = {-2, -1, -1, -5};
+    Matrix<int> m2(2, 2, v2.begin(), v2.end());
+
+    Matrix<int> m3 = -m1;
+
+    ASSERT_EQ(m2, m3);
+}
+
+TEST(Matrix, Matrix_combined_ops) {
+    std::vector<int> v1 = {2, 0, 0, 5};
+    Matrix<int> m1(2, 2, v1.begin(), v1.end());
+
+    std::vector<int> v2 = {2, -1, -1, 5};
+    Matrix<int> m2(2, 2, v2.begin(), v2.end());
+
+    std::vector<int> v3 = {0, 1, 1, 0};
+    Matrix<int> m3(2, 2, v3.begin(), v3.end());
+
+    Matrix<int> m4 = -m1 + m2 + m3;
+
+    Matrix<int> m(2, 2);
+
+    ASSERT_EQ(m, m4);
 }
 
 int main(int argc, char** argv) {

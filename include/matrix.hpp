@@ -13,15 +13,16 @@
 /* TODO
 1) add exceptions handler when accessing matrix elements
 2) add default value initialization
-3) add proxy matrix
-4) add copy constructor
-5) add elem setter
+3) add proxy matrix DONE
+4) add copy constructor DONE
+5) add elem setter 
 6) add matrix comparison operator
-7) fix allocation problems
+7) fix allocation problems DONE
 8) add exception handler when comparing elements
 9) add not only constructor with sequance but also with initilizer list
 10) add Matrix traverse function
-11) add operator []
+11) add operator [][] DONE
+12) add multiplication by number
 */
 
 template<typename T>
@@ -47,6 +48,7 @@ public:
     static Matrix<T> eye(int dim = 0, T data = T{});
     template<typename It>
     Matrix(int rows = 0, int cols = 0, It begin = nullptr, It end = nullptr);
+    Matrix(const Matrix<T>& rhs);
 
 
     T* get_elem(int row, int col) const;
@@ -61,6 +63,7 @@ public:
     ProxyMatrix operator[](int row) const {
         return ProxyMatrix( (T*) ((char*) m_data + (row - 1) * m_cols * sizeof(T)));
     }
+    Matrix<T> operator-() const;
 
     ~Matrix() {
         #ifndef RAW_ALLOCATION
@@ -71,6 +74,29 @@ public:
     }
     void dump();
 };
+
+template<typename T>
+Matrix<T> Matrix<T>::operator-() const {
+    Matrix<T> temp{*this};
+    for (int i = 1; i <= m_rows; ++i) {
+        for (int j = 1; j <= m_cols; ++j) {
+            T* ths = temp.get_elem(i, j);
+            T* othr = get_elem(i, j);
+            *ths = -(*othr); 
+        }
+    }
+    return temp;
+}
+
+template<typename T>
+Matrix<T>::Matrix(const Matrix<T>& rhs): Matrix(rhs.get_rows(), rhs.get_cols()) {
+    for (int i = 1; i <= m_rows; ++i) {
+        for (int j = 1; j <= m_cols; ++j) {
+            T* elem = get_elem(i, j);
+            *elem = rhs[i][j];
+        }
+    }
+}
 
 template<typename T>
 Matrix<T>& Matrix<T>::operator+=(const Matrix<T>& rhs) {
@@ -92,6 +118,23 @@ Matrix<T>& Matrix<T>::operator+=(const Matrix<T>& rhs) {
         }
     }
     return *this;
+}
+
+template<typename T>
+Matrix<T> operator+(const Matrix<T>& lhs, const Matrix<T>& rhs) {
+    Matrix<T> temp{lhs};
+    temp += rhs;
+    return temp;
+}
+
+template<typename T>
+Matrix<T> operator*(int lhs, const Matrix<T>& rhs) {
+
+}
+
+template<typename T>
+Matrix<T> operator*(const Matrix<T>& lhs, int rhs) {
+  
 }
 
 template<typename T>
