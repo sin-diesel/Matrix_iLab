@@ -7,6 +7,7 @@
 #define DEBUG true
 
 #define D(stmt) if (DEBUG) {stmt;}
+#define PRECISION 1e-5
 
 //#define RAW_ALLOCATION
 
@@ -38,7 +39,6 @@ class Matrix {
     int m_cols = 0;
     /* Continous array */
     T* m_data = nullptr;
-    double prec = 1e-5;
 
     struct ProxyMatrix {
         T* m_row;
@@ -206,26 +206,69 @@ void gauss(Matrix<T>& matrix) {
         /* first find a non-zero element in first column and swap rows */
         int from_row = current_col;
         D(std::cout << "At " << from_row << "row" << std::endl);
+
         D(std::cout << "Before reordering: " << std::endl);
         D(matrix.dump());
+
         bool degenerate = reorder(matrix, from_row, current_col);
+
         D(std::cout << "After reordering: " << std::endl);
         D(matrix.dump());
+
         if (degenerate) {
             return; // fix
         }
+
         T value = matrix[from_row][current_col];
+        assert(value > PRECISION);
+
         for (int current_row = current_col + 1; current_row <= dim; ++current_row) {
             double factor = 1.0 * matrix[current_row][current_col] / value;
             /*subtract all elements in a row */
             int pos = current_col;
+
             D(std::cout << "Before subtraction: " << std::endl);
             D(matrix.dump());
+
             subtract(matrix, current_row, from_row, pos, factor);
+
             D(std::cout << "After subtraction: " << std::endl);
             D(matrix.dump());
         }
     }
+}
+
+/*---------------------------------------------------------------*/
+template<typename T>
+Matrix<T> lower(Matrix<T>& original, Matrix<T>& upper) {
+    int dim = original.get_rows();
+    Matrix<T> lower(dim, dim);
+    /* set diagonal to all ones */
+    for (int diag = 1; diag <= dim; ++diag) {
+        lower[diag][diag] = 1;
+    }
+
+    D(std::cout << "Diagonal is set: " << std::endl);
+    D(lower.dump());
+
+    for (int rows = 1; rows <= dim; ++rows) {
+        /* diagonal are all ones */
+        for (int cols = 1; cols < rows; ++cols) {
+
+            double sum = 0;
+            /* calc sum */
+            for (int k = 1; k <= cols - 1; ++k) {
+                sum += upper[k][cols] * lower[rows][k];
+            }
+            D(std::cout << "Upper[" << cols << "] [" << cols << "] = " << upper[cols][cols] << std::endl);
+            T elem = (1.0 / upper[cols][cols]) * (original[rows][cols] - sum);
+
+            lower[rows][cols] = elem;
+            D(std::cout << "Calculating element [" << rows << "] [" << cols << "] " << std::endl);
+            D(lower.dump());
+        }
+    }
+    return lower;
 }
 
 /*---------------------------------------------------------------*/
@@ -237,14 +280,19 @@ std::pair<Matrix<T>, Matrix<T>> decompose(const Matrix<T>& matrix) {
     Matrix<T> L(dim, dim);
     /* Upper */
     Matrix<T> U(dim, dim);
-    /* temp */
-    Matrix<T> temp{matrix};
+    /* temporary so we do not need to change original matrix */
+    Matrix<T> temp_1{matrix};
+    Matrix<T> temp_2{matrix};
 
-    /* Calc upper triangual matrix */
+    /* applying gauss algorithm gives us upper triangular matrix */
+    gauss(temp_1);
+    U = temp_1;
+    /* calculate lower triangular matrix */
+    L = lower(temp_2, U);
+    D(std::cout << "Calculated lower: " << std::endl);
+    D(L.dump());
 
-    /* < dim because last row does not count */
-
-    gauss(temp);
+    return std::make_pair(L, U);
 }
 
 /*---------------------------------------------------------------*/
@@ -407,7 +455,7 @@ bool operator==(const Matrix<T>& lhs, const Matrix<T>& rhs) {
     }
     for (int i = 1; i <= lhs.get_rows(); ++i)
         for (int j = 1; j <= lhs.get_cols(); ++j)
-            if (*(lhs.get_elem(i, j)) != *(rhs.get_elem(i, j)))
+            if (*(lhs.get_elem(i, j)) - *(rhs.get_elem(i, j)) > PRECISION)
                 return false;
     return true;
 }

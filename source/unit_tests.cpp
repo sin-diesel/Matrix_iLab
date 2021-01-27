@@ -280,7 +280,7 @@ TEST(Matrix, Matrix_reorder_submatrix) {
     ASSERT_EQ(m3, m2);
 }
 
-TEST(Matrix, Matrix_decompose) {
+TEST(Matrix, Matrix_upper) {
     std::vector<double> v1 = {1, 2, 4, 3, 8, 14, 2, 6, 13};
     Matrix<double> m1(3, 3, v1.begin(), v1.end());
 
@@ -291,6 +291,50 @@ TEST(Matrix, Matrix_decompose) {
     D(m1.dump());
     gauss(m1);
     ASSERT_EQ(m1, m2);
+}
+
+TEST(Matrix, Matrix_lower) {
+    std::vector<double> original = {1, 2, 4, 3, 8, 14, 2, 6, 13};
+    Matrix<double> m_original(3, 3, original.begin(), original.end());
+
+    std::vector<double> upper = {1, 2, 4, 0, 2, 2, 0, 0, 3};
+    Matrix<double> m_upper(3, 3, upper.begin(), upper.end());
+
+
+    D(std::cout << "Original: " << std::endl;)
+    D(m_original.dump());
+    D(std::cout << "Upper: " << std::endl;)
+    D(m_upper.dump());
+    Matrix<double> low = lower(m_original, m_upper);
+
+    std::vector<double> ans = {1, 0, 0, 3, 1, 0, 2, 1, 1};
+    Matrix<double> m_ans(3, 3, ans.begin(), ans.end());
+
+    ASSERT_EQ(low, m_ans);
+}
+
+TEST(Matrix, Matrix_decompose) {
+    std::vector<double> v = {11, 9, 24, 2, 1, 5, 2, 6, 3, 17, 18, 1, 2, 5, 7, 1};
+    Matrix<double> m(4, 4, v.begin(), v.end());
+
+    std::vector<double> vl = {1.0000, 0.0000, 0.0000, 0.0000,
+                              0.2727, 1.0000, 0.0000, 0.0000,
+                              0.0909, 0.2875, 1.0000, 0.0000,
+                              0.1818, 0.2312, 0.0036, 1.0000};
+    Matrix<double> ml(4, 4, vl.begin(), vl.end());
+
+    std::vector<double> vu = {11.0000, 9.0000, 24.0000, 2.0000,
+                              0.0000,  14.5454, 11.4545, 0.4545,
+                              0.0000,  0.0000,  -3.4750, 5.6875,
+                              0.0000,  0.0000,   0.0000, 0.5107};
+    Matrix<double> mu(4, 4, vu.begin(), vu.end());
+
+    auto LU = decompose(m);
+    Matrix<double> L = std::get<0>(LU);
+    Matrix<double> U = std::get<1>(LU);
+
+    ASSERT_EQ(L, ml);
+    ASSERT_EQ(U, mu);
 }
 
 
