@@ -176,7 +176,7 @@ void reorder(Matrix<T>& matrix, int row, int col) {
         /* first find a row with non-zero element in first column */
         if (matrix[i][col] != 0) {
             for (int k = col; k <= dim; ++k) {
-                std::swap(matrix[1][k], matrix[i][k]);
+                std::swap(matrix[row][k], matrix[i][k]);
             }
             return;
         }

@@ -258,6 +258,28 @@ TEST(Matrix, Matrix_sub_constructror) {
     D(m3.dump());
 }
 
+TEST(Matrix, Matrix_reorder_submatrix) {
+    std::vector<int> v1 = {1, 1, 1, 2, 0, 0, 1, 1, 0};
+    Matrix<int> m1(3, 3, v1.begin(), v1.end());
+    D(std::cout << "Original: " << std::endl;)
+    D(m1.dump());
+
+    std::vector<int> v2 = {1, 0, 0, 0};
+    Matrix<int> m2(2, 2, v2.begin(), v2.end());
+    D(std::cout << "Expected: " << std::endl;)
+    D(m2.dump());
+
+    reorder(m1, 2, 2);
+    D(std::cout << "Original reordered: " << std::endl;)
+    D(m1.dump());
+
+    Matrix<int> m3 = Matrix<int>::submatrix(m1, 2, 2);
+    D(std::cout << "Submatrix from original: " << std::endl;)
+    D(m3.dump());
+
+    ASSERT_EQ(m3, m2);
+}
+
 
 int main(int argc, char** argv) {
     testing::InitGoogleTest(&argc, argv);
