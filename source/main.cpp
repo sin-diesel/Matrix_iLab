@@ -4,7 +4,8 @@
 
 int main(int argc, char** argv) {
     if (argc < 2) {
-        std::cout << "Usage: " << "./matrix N elem_1 elem_2 ... or ./matrix N < input_file";
+        std::cout << "Usage: " << "./matrix N elem_1 elem_2 ... or ./matrix < input_file";
+        exit(EXIT_FAILURE);
     }
 
     int N = 0;
@@ -18,5 +19,6 @@ int main(int argc, char** argv) {
 
     Matrix<int> matrix(N, N, elems.begin(), elems.end());
     matrix.dump();
+    
     return 0;
 }

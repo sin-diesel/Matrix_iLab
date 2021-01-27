@@ -2,26 +2,52 @@
 #include <string>
 #include <fstream>
 #include <random>
+#include <exception>
 #include "matrix.hpp"
+#include "tests_gen.h"
 
-int main(int argc, char** argv) {
-    std::string input(argv[1]);
+Tests::Tests(const std::string name, std::string dim): output_name(name), output_file(output_name) {
 
-    int dimension = std::stoi(input, nullptr, 10);
+    try {
+        dimension = std::stoi(dim, nullptr, 10);
+    } catch (std::invalid_argument& e) {
+        std::cout << "Invalid matrix dimension entered" << std::endl;
+        exit(EXIT_FAILURE);
+    } catch (std::out_of_range& e) {
+        std::cout << "Number entered is out of conversion range" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+    n_elements = dimension * dimension;
+};
 
-    std::ofstream output("test_data.dat");
-    
-    output << dimension << " ";
+void Tests::generate() {
+
+    output_file << dimension << " ";
 
     std::random_device rd; 
     std::mt19937 gen(rd()); 
-    std::uniform_int_distribution<> distrib(-20, 20);
+    std::uniform_int_distribution<> distrib(lower_limit, upper_limit);
 
-    for (int i = 0; i < dimension * dimension; ++i) {
+    /* generating random numbers */
+    for (int i = 0; i < n_elements; ++i) {
         int random = distrib(gen);
-        output << random << " ";
+        output_file << random << " ";
     }
 
-    output.close();
+    output_file.close();
+}
 
+int main(int argc, char** argv) {
+
+    if (argc != 2) {
+        std::cout << "Usage: ./testgen N, where N is matrix dimension" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
+    std::string input("./tests/random.dat");
+
+    Tests tests(input, argv[1]);
+    tests.generate();
+
+    return 0;
 }
