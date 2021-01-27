@@ -6,6 +6,7 @@
 #include "matrix.hpp"
 #include "tests_gen.h"
 
+/*---------------------------------------------------------------*/
 Tests::Tests(const std::string name, std::string dim): output_name(name), output_file(output_name) {
 
     try {
@@ -20,6 +21,7 @@ Tests::Tests(const std::string name, std::string dim): output_name(name), output
     n_elements = dimension * dimension;
 };
 
+/*---------------------------------------------------------------*/
 void Tests::generate() {
 
     output_file << dimension << " ";

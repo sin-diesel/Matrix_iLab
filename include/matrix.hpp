@@ -4,7 +4,7 @@
 #include <iomanip>
 #include "matrix_exc.h"
 
-#define DEBUG false
+#define DEBUG true
 
 #define D(stmt) if (DEBUG) {stmt;}
 
@@ -25,8 +25,10 @@
 11) add operator [][] DONE
 12) add multiplication by number DONE
 13) add constructor with specified element DONE
+14) add submatrix constructor
 */
 
+/*---------------------------------------------------------------*/
 template<typename T>
 class Matrix {
 
@@ -47,11 +49,12 @@ class Matrix {
         }
 
         ProxyMatrix(T* row): m_row(row) {};
-        };
+    };
     
 public: 
     Matrix(int rows = 0, int cols = 0, T data = T{});
     static Matrix<T> eye(int dim = 0, T data = T{});
+    static Matrix<T> submatrix(const Matrix<T>& rhs, int row_num, int col_num);
     template<typename It>
     Matrix(int rows = 0, int cols = 0, It begin = nullptr, It end = nullptr);
     Matrix(const Matrix<T>& rhs);
@@ -65,7 +68,9 @@ public:
         return m_cols;
     }
     void transpose();
+    T determinant();
 
+    Matrix<T>& operator=(const Matrix<T>& rhs);
     Matrix<T>& operator+=(const Matrix<T>& rhs);
     Matrix<T>& operator-=(const Matrix<T>& rhs);
     Matrix<T>& operator*=(int n);
@@ -113,6 +118,97 @@ void Matrix<T>::transpose() {
 
 /*---------------------------------------------------------------*/
 template<typename T>
+T Matrix<T>::determinant() {
+
+}
+
+/*---------------------------------------------------------------*/
+template<typename T>
+Matrix<T>& Matrix<T>::operator=(const Matrix<T>& rhs) {
+    /* move? */
+    if(this == &rhs)
+       return *this;
+
+    m_rows = rhs.get_rows();
+    m_cols = rhs.get_cols();
+    m_data = new T[m_rows * m_cols];
+
+    for (int i = 1; i <= m_rows; ++i) {
+        for (int j = 1; j <= m_cols; ++j) {
+            T* elem = get_elem(i, j);
+            *elem = rhs[i][j];
+        }
+    }
+    return *this;
+}
+
+/*---------------------------------------------------------------*/
+template<typename T>
+void reorder(Matrix<T>& matrix) {
+    //Matrix<T> temp{matrix};
+    /* return if no need to change */
+    int dim = matrix.get_rows();
+    if (matrix[1][1] != 0) {
+        return;
+    }
+    for (int i = 2; i <= dim; ++i) {
+        /* first find a row with non-zero element in first column */
+        if (matrix[i][1] != 0) {
+            for (int k = 1; k <= dim; ++k) {
+                std::swap(matrix[1][k], matrix[i][k]);
+            }
+            return;
+        }
+    }
+    /* Zero col! */
+    return;
+}
+
+/*---------------------------------------------------------------*/
+template<typename T>
+void reorder(Matrix<T>& matrix, int row, int col) {
+    /* return if no need to change */
+    int dim = matrix.get_rows();
+    if (matrix[row][col] != 0) {
+        return;
+    }
+    for (int i = row + 1; i <= dim; ++i) {
+        /* first find a row with non-zero element in first column */
+        if (matrix[i][col] != 0) {
+            for (int k = col; k <= dim; ++k) {
+                std::swap(matrix[1][k], matrix[i][k]);
+            }
+            return;
+        }
+    }
+    /* Zero col! */
+    return;
+}
+
+/*---------------------------------------------------------------*/
+/* return two decomposed matrices */
+template<typename T>
+std::pair<Matrix<T>, Matrix<T>> decompose(const Matrix<T>& matrix) {
+    int dim = matrix.get_rows();
+    /* Lower */
+    Matrix<T> L(dim, dim);
+    /* Upper */
+    Matrix<T> U(dim, dim);
+    /* temp */
+    Matrix<T> temp{matrix};
+
+    /* Calc upper triangual matrix */
+
+    for (int i = 1; i <= dim; ++i) {
+        /* first find a row with non-zero element in first column */
+        if (temp[i][1] != 0) {
+            std::swap(temp[1][1], temp[i][1]);
+        }
+    }
+}
+
+/*---------------------------------------------------------------*/
+template<typename T>
 Matrix<T>& Matrix<T>::operator*=(int n) {
     for (int i = 1; i <= m_rows; ++i) {
         for (int j = 1; j <= m_cols; ++j) {
@@ -149,6 +245,26 @@ Matrix<T>::Matrix(const Matrix<T>& rhs): Matrix(rhs.get_rows(), rhs.get_cols()) 
 }
 
 /*---------------------------------------------------------------*/
+/* construct via rhs matrix, row_num and col_num specify sumbatrix borders */
+template<typename T>
+Matrix<T> Matrix<T>::submatrix(const Matrix<T>& rhs, int row_num, int col_num) {
+    Matrix<T> temp{rhs};
+    int rows = rhs.get_rows();
+    int cols = rhs.get_cols();
+    std::vector<T> elems;
+    for (int i = row_num; i <= rows; ++i) {
+        for (int j = col_num; j <= cols; ++j) {
+            elems.push_back(rhs[i][j]);
+            D(std::cout << "Elem: " << rhs[i][j] << std::endl);
+        }
+    }
+    int sub_rows = rows - row_num + 1;
+    int sub_cols = cols - col_num + 1;
+    Matrix<T> submatrix(sub_rows, sub_cols, elems.begin(), elems.end());
+    return submatrix;
+}
+
+/*---------------------------------------------------------------*/
 /* functions that check if two matrices can be added/subtracted together */
 template<typename T>
 bool equal_dimensions(const Matrix<T>& lhs, const Matrix<T>& rhs) {
@@ -182,6 +298,7 @@ Matrix<T>& Matrix<T>::operator+=(const Matrix<T>& rhs) {
     return *this;
 }
 
+/*---------------------------------------------------------------*/
 template<typename T>
 Matrix<T>& Matrix<T>::operator-=(const Matrix<T>& rhs) {
 
@@ -195,6 +312,7 @@ Matrix<T>& Matrix<T>::operator-=(const Matrix<T>& rhs) {
     return *this;
 }
 
+/*---------------------------------------------------------------*/
 template<typename T>
 Matrix<T> operator+(const Matrix<T>& lhs, const Matrix<T>& rhs) {
     Matrix<T> temp{lhs};
@@ -202,6 +320,7 @@ Matrix<T> operator+(const Matrix<T>& lhs, const Matrix<T>& rhs) {
     return temp;
 }
 
+/*---------------------------------------------------------------*/
 template<typename T>
 Matrix<T> operator*(int num, const Matrix<T>& rhs) {
     Matrix<T> temp{rhs};
@@ -209,11 +328,13 @@ Matrix<T> operator*(int num, const Matrix<T>& rhs) {
     return temp;
 }
 
+/*---------------------------------------------------------------*/
 template<typename T>
 Matrix<T> operator*(const Matrix<T>& lhs, int num) {
     return num * lhs;
 }
 
+/*---------------------------------------------------------------*/
 template<typename T>
 template<typename It> // why?
 Matrix<T>::Matrix(int rows, int cols, It begin, It end): Matrix(rows, cols) {
@@ -232,6 +353,7 @@ Matrix<T>::Matrix(int rows, int cols, It begin, It end): Matrix(rows, cols) {
         }
 }
 
+/*---------------------------------------------------------------*/
 template<typename T>
 bool operator==(const Matrix<T>& lhs, const Matrix<T>& rhs) {
     int l_rows = lhs.get_rows();
@@ -250,7 +372,7 @@ bool operator==(const Matrix<T>& lhs, const Matrix<T>& rhs) {
     return true;
 }
 
-
+/*---------------------------------------------------------------*/
 template<typename T>
 Matrix<T>::Matrix(int rows, int cols, T data): m_rows(rows), m_cols(cols) {
 
@@ -280,6 +402,7 @@ Matrix<T>::Matrix(int rows, int cols, T data): m_rows(rows), m_cols(cols) {
 
 }
 
+/*---------------------------------------------------------------*/
 template<typename T>
 Matrix<T> Matrix<T>::eye(int dim, T data) {
     Matrix<T> temp{dim, dim};
@@ -293,7 +416,7 @@ Matrix<T> Matrix<T>::eye(int dim, T data) {
     return temp;
 }
 
-
+/*---------------------------------------------------------------*/
 template <typename T>
 T* Matrix<T>::get_elem(int row, int col) const {
     /* This is very questionable, as static_cast protects against
@@ -301,6 +424,7 @@ T* Matrix<T>::get_elem(int row, int col) const {
     return (T*) ((char*) m_data + (row - 1) * m_cols * sizeof(T) + (col - 1) * sizeof(T));
 }
 
+/*---------------------------------------------------------------*/
 template <typename T>
 void Matrix<T>::dump() const {
     std::cout << "DUMPING MATRIX " << this << std::endl;

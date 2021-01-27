@@ -3,6 +3,7 @@
 #include <exception>
 #include <string>
 
+/*---------------------------------------------------------------*/
 class MatrixException : public std::exception {
     std::string m_error;
 public:

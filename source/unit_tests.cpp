@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include "matrix.hpp"
 
-
+/*---------------------------------------------------------------*/
 TEST(Matrix, Matrix_rowcol_constructor) {
     Matrix<int> m1{5, 6, 56};
     D(m1.dump());
@@ -21,12 +21,14 @@ TEST(Matrix, Matrix_rowcol_constructor) {
     D(m2.dump());
 }
 
+/*---------------------------------------------------------------*/
 TEST(Matrix, Matrix_eye_constructor) {
     std::cout << "Constructing diagonal matrix" << std::endl;
     Matrix<int> m1 = Matrix<int>::eye(10, 5);
     D(m1.dump());
 }
 
+/*---------------------------------------------------------------*/
 TEST(Matrix, Matrix_comparison_op) {
     Matrix<int> m1 = Matrix<int>::eye(10, 5);
     Matrix<int> m2(10, 10);
@@ -39,6 +41,7 @@ TEST(Matrix, Matrix_comparison_op) {
     ASSERT_EQ(m1, m2);
 }
 
+/*---------------------------------------------------------------*/
 TEST(Matrix, Matrix_exc) {
     try {
         Matrix<int> m1 = Matrix<int>::eye(10, 5);
@@ -51,6 +54,7 @@ TEST(Matrix, Matrix_exc) {
     }
 }
 
+/*---------------------------------------------------------------*/
 TEST(Matrix, Matrix_sequence) {
     std::vector<int> v = {2, 1, 1, 5};
     Matrix<int> m1(2, 2, v.begin(), v.end());
@@ -73,6 +77,7 @@ TEST(Matrix, Matrix_sequence) {
 
 }
 
+/*---------------------------------------------------------------*/
 TEST(Matrix, Matrix_braces_op) {
     std::vector<int> v = {2, 1, 1, 5};
     Matrix<int> m1(2, 2, v.begin(), v.end());
@@ -83,6 +88,7 @@ TEST(Matrix, Matrix_braces_op) {
     ASSERT_EQ(m1[2][2], 5);
 }
 
+/*---------------------------------------------------------------*/
 TEST(Matrix, Matrix_add_op) {
     std::vector<int> v = {2, 1, 1, 5};
     Matrix<int> m1(2, 2, v.begin(), v.end());
@@ -97,6 +103,7 @@ TEST(Matrix, Matrix_add_op) {
     ASSERT_EQ(m2, m3);
 }
 
+/*---------------------------------------------------------------*/
 TEST(Matrix, Matrix_copy_constructor) {
     std::vector<int> v1 = {2, 1, 1, 5};
     Matrix<int> m1(2, 2, v1.begin(), v1.end());
@@ -109,6 +116,7 @@ TEST(Matrix, Matrix_copy_constructor) {
     ASSERT_EQ(m1, m2);
 }
 
+/*---------------------------------------------------------------*/
 TEST(Matrix, Matrix_add_bin_op) {
     std::vector<int> v1 = {2, 1, 1, 5};
     Matrix<int> m1(2, 2, v1.begin(), v1.end());
@@ -124,6 +132,7 @@ TEST(Matrix, Matrix_add_bin_op) {
     ASSERT_EQ(m4, m3);
 }
 
+/*---------------------------------------------------------------*/
 TEST(Matrix, Matrix_negate_op) {
     std::vector<int> v1 = {2, 1, 1, 5};
     Matrix<int> m1(2, 2, v1.begin(), v1.end());
@@ -136,6 +145,7 @@ TEST(Matrix, Matrix_negate_op) {
     ASSERT_EQ(m2, m3);
 }
 
+/*---------------------------------------------------------------*/
 TEST(Matrix, Matrix_combined_ops) {
     std::vector<int> v1 = {2, 0, 0, 5};
     Matrix<int> m1(2, 2, v1.begin(), v1.end());
@@ -153,6 +163,7 @@ TEST(Matrix, Matrix_combined_ops) {
     ASSERT_EQ(m, m4);
 }
 
+/*---------------------------------------------------------------*/
 TEST(Matrix, Matrix_mult_by_num) {
     std::vector<int> v1 = {1, -1, -1, 1};
     Matrix<int> m1(2, 2, v1.begin(), v1.end());
@@ -169,6 +180,7 @@ TEST(Matrix, Matrix_mult_by_num) {
     ASSERT_EQ(m4, m2);
 }
 
+/*---------------------------------------------------------------*/
 TEST(Matrix, Matrix_sub_op) {
     std::vector<int> v1 = {2, -2, -2, 2};
     Matrix<int> m1(2, 2, v1.begin(), v1.end());
@@ -187,6 +199,7 @@ TEST(Matrix, Matrix_sub_op) {
     ASSERT_EQ(m1, m3);
 }
 
+/*---------------------------------------------------------------*/
 TEST(Matrix, Matrix_transpose) {
     std::vector<int> v1 = {1, 0, 1, 2};
     Matrix<int> m1(2, 2, v1.begin(), v1.end());
@@ -200,6 +213,7 @@ TEST(Matrix, Matrix_transpose) {
     ASSERT_EQ(m1, m2);
 }
 
+/*---------------------------------------------------------------*/
 TEST(Matrix, Matrix_elem_access) {
     std::vector<int> v1 = {1, 0, 1, 2};
     Matrix<int> m1(2, 2, v1.begin(), v1.end());
@@ -211,6 +225,37 @@ TEST(Matrix, Matrix_elem_access) {
         // How to exit test manually? This is a horrible solution.
         ASSERT_EQ(1, 0);
     }
+}
+
+/*---------------------------------------------------------------*/
+TEST(Matrix, Matrix_reorder) {
+    std::vector<int> v1 = {0, 0, 1, 2, 2, 2, 1, 1, 0};
+    Matrix<int> m1(3, 3, v1.begin(), v1.end());
+
+    D(m1.dump());
+    std::vector<int> v2 = {2, 2, 2, 0, 0, 1, 1, 1, 0};
+    Matrix<int> m2(3, 3, v2.begin(), v2.end());
+
+    reorder(m1);
+    D(m1.dump());
+
+    ASSERT_EQ(m1, m2);
+}
+
+TEST(Matrix, Matrix_sub_constructror) {
+    std::vector<int> v1 = {0, 0, 1, 2, 2, 2, 1, 1, 0};
+    Matrix<int> m1(3, 3, v1.begin(), v1.end());
+
+    std::vector<int> v2 = {2, 2, 1, 0};
+    Matrix<int> m2(2, 2, v2.begin(), v2.end());
+
+    D(m1.dump());
+    Matrix<int> m3 = Matrix<int>::submatrix(m1, 2, 2);
+    D(m2.dump());
+    ASSERT_EQ(m3, m2);
+
+    m3 = Matrix<int>::submatrix(m1, 1, 1);
+    D(m3.dump());
 }
 
 
