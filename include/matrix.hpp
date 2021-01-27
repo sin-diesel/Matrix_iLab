@@ -25,7 +25,9 @@
 11) add operator [][] DONE
 12) add multiplication by number DONE
 13) add constructor with specified element DONE
-14) add submatrix constructor
+14) add submatrix constructor DONE
+15) add rows swap func DONE
+16) add precision
 */
 
 /*---------------------------------------------------------------*/
@@ -36,6 +38,7 @@ class Matrix {
     int m_cols = 0;
     /* Continous array */
     T* m_data = nullptr;
+    double prec = 1e-5;
 
     struct ProxyMatrix {
         T* m_row;
@@ -144,12 +147,12 @@ Matrix<T>& Matrix<T>::operator=(const Matrix<T>& rhs) {
 
 /*---------------------------------------------------------------*/
 template<typename T>
-void reorder(Matrix<T>& matrix) {
+bool reorder(Matrix<T>& matrix) {
     //Matrix<T> temp{matrix};
     /* return if no need to change */
     int dim = matrix.get_rows();
     if (matrix[1][1] != 0) {
-        return;
+        return false;
     }
     for (int i = 2; i <= dim; ++i) {
         /* first find a row with non-zero element in first column */
@@ -157,20 +160,21 @@ void reorder(Matrix<T>& matrix) {
             for (int k = 1; k <= dim; ++k) {
                 std::swap(matrix[1][k], matrix[i][k]);
             }
-            return;
+            return false;
         }
     }
     /* Zero col! */
-    return;
+    return true;
 }
 
 /*---------------------------------------------------------------*/
+/* returns true if there are full zero columns */
 template<typename T>
-void reorder(Matrix<T>& matrix, int row, int col) {
+bool reorder(Matrix<T>& matrix, int row, int col) {
     /* return if no need to change */
     int dim = matrix.get_rows();
     if (matrix[row][col] != 0) {
-        return;
+        return false;
     }
     for (int i = row + 1; i <= dim; ++i) {
         /* first find a row with non-zero element in first column */
@@ -178,11 +182,50 @@ void reorder(Matrix<T>& matrix, int row, int col) {
             for (int k = col; k <= dim; ++k) {
                 std::swap(matrix[row][k], matrix[i][k]);
             }
-            return;
+            return false;
         }
     }
     /* Zero col! */
-    return;
+    return true;
+}
+
+template<typename T>
+void subtract(Matrix<T>& matrix, int current_row, int from_row, int pos, double factor) {
+    int dim = matrix.get_rows();
+    for (int i = pos; i <= dim; ++i) {
+        matrix[current_row][i] -= 1.0 * factor * matrix[from_row][i];
+    }
+}
+
+template<typename T>
+void gauss(Matrix<T>& matrix) {
+
+    int dim = matrix.get_rows();
+
+    for (int current_col = 1; current_col < dim; ++current_col) {
+        /* first find a non-zero element in first column and swap rows */
+        int from_row = current_col;
+        D(std::cout << "At " << from_row << "row" << std::endl);
+        D(std::cout << "Before reordering: " << std::endl);
+        D(matrix.dump());
+        bool degenerate = reorder(matrix, from_row, current_col);
+        D(std::cout << "After reordering: " << std::endl);
+        D(matrix.dump());
+        if (degenerate) {
+            return; // fix
+        }
+        T value = matrix[from_row][current_col];
+        for (int current_row = current_col + 1; current_row <= dim; ++current_row) {
+            double factor = 1.0 * matrix[current_row][current_col] / value;
+            /*subtract all elements in a row */
+            int pos = current_col;
+            D(std::cout << "Before subtraction: " << std::endl);
+            D(matrix.dump());
+            subtract(matrix, current_row, from_row, pos, factor);
+            D(std::cout << "After subtraction: " << std::endl);
+            D(matrix.dump());
+        }
+    }
 }
 
 /*---------------------------------------------------------------*/
@@ -199,12 +242,9 @@ std::pair<Matrix<T>, Matrix<T>> decompose(const Matrix<T>& matrix) {
 
     /* Calc upper triangual matrix */
 
-    for (int i = 1; i <= dim; ++i) {
-        /* first find a row with non-zero element in first column */
-        if (temp[i][1] != 0) {
-            std::swap(temp[1][1], temp[i][1]);
-        }
-    }
+    /* < dim because last row does not count */
+
+    gauss(temp);
 }
 
 /*---------------------------------------------------------------*/

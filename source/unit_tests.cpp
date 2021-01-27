@@ -280,6 +280,19 @@ TEST(Matrix, Matrix_reorder_submatrix) {
     ASSERT_EQ(m3, m2);
 }
 
+TEST(Matrix, Matrix_decompose) {
+    std::vector<double> v1 = {1, 2, 4, 3, 8, 14, 2, 6, 13};
+    Matrix<double> m1(3, 3, v1.begin(), v1.end());
+
+    std::vector<double> v2 = {1, 2, 4, 0, 2, 2, 0, 0, 3};
+    Matrix<double> m2(3, 3, v1.begin(), v1.end());
+
+    D(std::cout << "Original: " << std::endl;)
+    D(m1.dump());
+    gauss(m1);
+    ASSERT_EQ(m1, m2);
+}
+
 
 int main(int argc, char** argv) {
     testing::InitGoogleTest(&argc, argv);
