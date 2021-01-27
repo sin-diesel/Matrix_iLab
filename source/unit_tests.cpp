@@ -318,14 +318,14 @@ TEST(Matrix, Matrix_decompose) {
     Matrix<double> m(4, 4, v.begin(), v.end());
 
     std::vector<double> vl = {1.0000, 0.0000, 0.0000, 0.0000,
-                              0.2727, 1.0000, 0.0000, 0.0000,
-                              0.0909, 0.2875, 1.0000, 0.0000,
-                              0.1818, 0.2312, 0.0036, 1.0000};
+                              0.0909, 1.0000, 0.0000, 0.0000,
+                              0.2727, 3.4782, 1.0000, 0.0000,
+                              0.1818, 0.8043, 0.2302, 1.0000};
     Matrix<double> ml(4, 4, vl.begin(), vl.end());
 
     std::vector<double> vu = {11.0000, 9.0000, 24.0000, 2.0000,
-                              0.0000,  14.5454, 11.4545, 0.4545,
-                              0.0000,  0.0000,  -3.4750, 5.6875,
+                              0.0000,  4.1818, -0.1818, 5.8182,
+                              0.0000,  0.0000,  12.0869, -19.7826,
                               0.0000,  0.0000,   0.0000, 0.5107};
     Matrix<double> mu(4, 4, vu.begin(), vu.end());
 
@@ -335,6 +335,18 @@ TEST(Matrix, Matrix_decompose) {
 
     ASSERT_EQ(L, ml);
     ASSERT_EQ(U, mu);
+}
+
+TEST(Matrix, Matrix_determinant) {
+    std::vector<double> v = {11, 9, 24, 2, 1, 5, 2, 6, 3, 17, 18, 1, 2, 5, 7, 1};
+    Matrix<double> m(4, 4, v.begin(), v.end());
+
+    auto LU = decompose(m);
+    Matrix<double> L = std::get<0>(LU);
+    Matrix<double> U = std::get<1>(LU);
+
+    double determinant = m.determinant();
+    ASSERT_EQ(static_cast<int>(determinant), 284);
 }
 
 

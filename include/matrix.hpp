@@ -7,7 +7,7 @@
 #define DEBUG true
 
 #define D(stmt) if (DEBUG) {stmt;}
-#define PRECISION 1e-5
+#define PRECISION 1e-3
 
 //#define RAW_ALLOCATION
 
@@ -122,7 +122,15 @@ void Matrix<T>::transpose() {
 /*---------------------------------------------------------------*/
 template<typename T>
 T Matrix<T>::determinant() {
+    T determinant = 1.0;
+    auto LU = decompose(*this);
+    Matrix<double> L = std::get<0>(LU);
+    Matrix<double> U = std::get<1>(LU);
 
+    for (int i = 1; i <= m_rows; ++i) {
+        determinant *= U[i][i];
+    }
+    return determinant;
 }
 
 /*---------------------------------------------------------------*/
