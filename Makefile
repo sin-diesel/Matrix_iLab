@@ -13,7 +13,7 @@ all:
 	$(CPP) $(CPPFLAGS) $(SRC_DIR)/unit_tests.cpp -o unittests
 	$(CPP) $(CPPFLAGS) $(SRC_DIR)/tests_gen.cpp -o testgen
 
-test:
+unittests:
 	$(CPP) $(CPPFLAGS) $(SRC_DIR)/unit_tests.cpp -o unittests
 
 matrix:

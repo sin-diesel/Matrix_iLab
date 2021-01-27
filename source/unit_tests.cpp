@@ -40,14 +40,14 @@ TEST(Matrix, Matrix_comparison_op) {
 }
 
 TEST(Matrix, Matrix_exc) {
-    Matrix<int> m1 = Matrix<int>::eye(10, 5);
-    Matrix<int> m2 = Matrix<int>::eye(9, 5);
     try {
+        Matrix<int> m1 = Matrix<int>::eye(10, 5);
+        Matrix<int> m2 = Matrix<int>::eye(10, 5);
         auto eq = m1 == m2;
-    } catch (...) {
-        std::cout << "Matrix dimension mismatch" << std::endl;
+    } catch (MatrixException& e) {
+        std::cout << e.what() << std::endl;
         // How to exit test manually? This is a horrible solution.
-        ASSERT_EQ(0, 0);
+        ASSERT_EQ(1, 0);
     }
 }
 
@@ -199,6 +199,20 @@ TEST(Matrix, Matrix_transpose) {
     D(m1.dump());
     ASSERT_EQ(m1, m2);
 }
+
+TEST(Matrix, Matrix_elem_access) {
+    std::vector<int> v1 = {1, 0, 1, 2};
+    Matrix<int> m1(2, 2, v1.begin(), v1.end());
+
+    try {
+        auto elem = m1[1][1];
+    } catch (MatrixException& e) {
+        std::cout << e.what() << std::endl;
+        // How to exit test manually? This is a horrible solution.
+        ASSERT_EQ(1, 0);
+    }
+}
+
 
 int main(int argc, char** argv) {
     testing::InitGoogleTest(&argc, argv);

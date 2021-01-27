@@ -12,19 +12,19 @@
 
 
 /* TODO
-1) add exceptions handler when accessing matrix elements
-2) add default value initialization
+1) add exceptions handler when accessing matrix elements DONE
+2) add default value initialization DONE
 3) add proxy matrix DONE
 4) add copy constructor DONE
 5) add elem setter 
-6) add matrix comparison operator
+6) add matrix comparison operator DONE
 7) fix allocation problems DONE
-8) add exception handler when comparing elements
+8) add exception handler when comparing elements DONE
 9) add not only constructor with sequance but also with initilizer list
 10) add Matrix traverse function
 11) add operator [][] DONE
 12) add multiplication by number DONE
-13) add constructor with specified element
+13) add constructor with specified element DONE
 */
 
 template<typename T>
