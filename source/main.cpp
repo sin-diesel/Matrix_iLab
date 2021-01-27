@@ -3,10 +3,8 @@
 #include "matrix.hpp"
 
 int main(int argc, char** argv) {
-    if (argc < 2) {
-        std::cout << "Usage: " << "./matrix N elem_1 elem_2 ... or ./matrix < input_file";
-        exit(EXIT_FAILURE);
-    }
+
+    std::cout << "Usage: " << "./matrix N elem_1 elem_2 ... or ./matrix < input_file" << std::endl;
 
     int N = 0;
     std::vector<int> elems;
@@ -17,8 +15,12 @@ int main(int argc, char** argv) {
         elems.push_back(elem);
     }
 
-    Matrix<int> matrix(N, N, elems.begin(), elems.end());
-    matrix.dump();
+    try {
+        Matrix<int> matrix(N, N, elems.begin(), elems.end());
+        matrix.dump();
+    } catch(MatrixException& e) {
+        std::cout << e.what() << std::endl;
+    }
     
     return 0;
 }

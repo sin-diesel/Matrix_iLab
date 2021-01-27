@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <iomanip>
+#include "matrix_exc.h"
 
 #define DEBUG false
 
@@ -37,12 +38,16 @@ class Matrix {
     struct ProxyMatrix {
         T* m_row;
         T& operator[](int col) {
+            // how to add m_cols bound checking?
+            if (col <= 0) {
+                throw MatrixException("Invalid argument passed to braces operator");
+            }
             // extremely ugly
             return *( (T*) ((char*) m_row + (col - 1) * sizeof(T))); 
         }
 
         ProxyMatrix(T* row): m_row(row) {};
-    };
+        };
     
 public: 
     Matrix(int rows = 0, int cols = 0, T data = T{});
@@ -65,10 +70,12 @@ public:
     Matrix<T>& operator-=(const Matrix<T>& rhs);
     Matrix<T>& operator*=(int n);
     ProxyMatrix operator[](int row) const {
+        if (row <= 0 || row > m_rows) {
+            throw MatrixException("Invalid argument passed to braces operator");
+        }
         return ProxyMatrix( (T*) ((char*) m_data + (row - 1) * m_cols * sizeof(T)));
     }
     Matrix<T> operator-() const;
-    //Matrix<T>& operator
 
     ~Matrix() {
         #ifndef RAW_ALLOCATION
@@ -77,9 +84,10 @@ public:
         free(m_data);
         #endif
     }
-    void dump();
+    void dump() const;
 };
 
+/*---------------------------------------------------------------*/
 template<typename T>
 void swap(T* a, T* b) {
     T temp = *a;
@@ -87,6 +95,7 @@ void swap(T* a, T* b) {
     *b = temp;
 }
 
+/*---------------------------------------------------------------*/
 template<typename T>
 void Matrix<T>::transpose() {
     int diag = 1;
@@ -97,10 +106,12 @@ void Matrix<T>::transpose() {
             D(std::cout << "Swapping " << *elem_1 << " and " << *elem_2 << std::endl;)
             swap(elem_1, elem_2);
         }
+        /* swapping only diagonal elements */
         ++diag;
     }
 }
 
+/*---------------------------------------------------------------*/
 template<typename T>
 Matrix<T>& Matrix<T>::operator*=(int n) {
     for (int i = 1; i <= m_rows; ++i) {
@@ -112,6 +123,7 @@ Matrix<T>& Matrix<T>::operator*=(int n) {
     return *this;
 }
 
+/*---------------------------------------------------------------*/
 template<typename T>
 Matrix<T> Matrix<T>::operator-() const {
     Matrix<T> temp{*this};
@@ -125,6 +137,7 @@ Matrix<T> Matrix<T>::operator-() const {
     return temp;
 }
 
+/*---------------------------------------------------------------*/
 template<typename T>
 Matrix<T>::Matrix(const Matrix<T>& rhs): Matrix(rhs.get_rows(), rhs.get_cols()) {
     for (int i = 1; i <= m_rows; ++i) {
@@ -135,6 +148,7 @@ Matrix<T>::Matrix(const Matrix<T>& rhs): Matrix(rhs.get_rows(), rhs.get_cols()) 
     }
 }
 
+/*---------------------------------------------------------------*/
 /* functions that check if two matrices can be added/subtracted together */
 template<typename T>
 bool equal_dimensions(const Matrix<T>& lhs, const Matrix<T>& rhs) {
@@ -149,13 +163,14 @@ bool equal_dimensions(const Matrix<T>& lhs, const Matrix<T>& rhs) {
     return true;
 }
 
+/*---------------------------------------------------------------*/
 template<typename T>
 Matrix<T>& Matrix<T>::operator+=(const Matrix<T>& rhs) {
 
     bool is_equal = equal_dimensions(*this, rhs);
     if (is_equal == false) {
         // a good idea to throw exception?
-        throw std::exception();
+        throw MatrixException("Invalid dimensions");
     }
     for (int i = 1; i <= m_rows; ++i) {
         for (int j = 1; j <= m_cols; ++j) {
@@ -173,7 +188,7 @@ Matrix<T>& Matrix<T>::operator-=(const Matrix<T>& rhs) {
     bool is_equal = equal_dimensions(*this, rhs);
     if (is_equal == false) {
         // a good idea to throw exception?
-        throw std::exception();
+        throw MatrixException("Invalid dimensions");
     }
 
     *this += (-rhs);
@@ -205,7 +220,8 @@ Matrix<T>::Matrix(int rows, int cols, It begin, It end): Matrix(rows, cols) {
     int dist = std::distance(begin, end);
     D(std::cout << "Distance: " << dist << std::endl);
     if (rows * cols != dist) {
-        throw std::exception();
+        throw MatrixException("Invalid sequence constructor parameters: matrix size "
+                                "does not match number of elements");
     }
 
     for (int i = 1; i <= rows; ++i)
@@ -225,7 +241,7 @@ bool operator==(const Matrix<T>& lhs, const Matrix<T>& rhs) {
 
     if (l_rows != r_rows || l_cols != r_cols) {
         // a good idea to throw exception?
-        throw std::exception();
+        throw MatrixException("Matrices dimensions are not equal");
     }
     for (int i = 1; i <= lhs.get_rows(); ++i)
         for (int j = 1; j <= lhs.get_cols(); ++j)
@@ -286,7 +302,7 @@ T* Matrix<T>::get_elem(int row, int col) const {
 }
 
 template <typename T>
-void Matrix<T>::dump() {
+void Matrix<T>::dump() const {
     std::cout << "DUMPING MATRIX " << this << std::endl;
     std::cout << "Rows: " << m_rows << std::endl;
     std::cout << "Cols: " << m_cols << std::endl;
