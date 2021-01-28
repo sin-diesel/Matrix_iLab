@@ -8,7 +8,7 @@
 #define DEBUG false
 
 #define D(stmt) if (DEBUG) {stmt;}
-#define PRECISION 1e-3
+#define PRECISION 1e-6
 
 //#define RAW_ALLOCATION
 
@@ -29,7 +29,8 @@
 13) add constructor with specified element DONE
 14) add submatrix constructor DONE
 15) add rows swap func DONE
-16) add precision
+16) add precision DONE
+17) add option for test generator to print newline character 
 */
 
 /*---------------------------------------------------------------*/

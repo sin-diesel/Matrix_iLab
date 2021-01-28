@@ -25,6 +25,7 @@ public:
         output_file.close();
     };
 
-    void generate();
+    /* if newline == true, print newline characters at the end of each row */
+    void generate(bool newline = false);
 
 };

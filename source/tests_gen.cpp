@@ -22,9 +22,12 @@ Tests::Tests(const std::string name, std::string dim): output_name(name), output
 };
 
 /*---------------------------------------------------------------*/
-void Tests::generate() {
+void Tests::generate(bool newline) {
 
     output_file << dimension << " ";
+    if (newline) {
+        output_file << std::endl;
+    }
 
     std::random_device rd; 
     std::mt19937 gen(rd()); 
@@ -32,6 +35,11 @@ void Tests::generate() {
 
     /* generating random numbers */
     for (int i = 0; i < n_elements; ++i) {
+        if (newline) {
+            if (i % dimension == 0 && i != 0) {
+                output_file << std::endl;
+            }
+        }
         int random = distrib(gen);
         output_file << random << " ";
     }
@@ -47,15 +55,21 @@ int main(int argc, char** argv) {
         exit(EXIT_FAILURE);
     }
 
+    bool newl = false;
     if (argc == 3) {
         std::string arg(argv[2]);
+        std::string newline("-newline");
+        /* if arg == "-newline", print newline at the end of each row */
+        if (arg.compare(newline) == 0) {
+            newl = true;
+        }
         
     }
 
     std::string input("./tests/random.dat");
 
     Tests tests(input, argv[1]);
-    tests.generate();
+    tests.generate(newl);
 
     return 0;
 }
