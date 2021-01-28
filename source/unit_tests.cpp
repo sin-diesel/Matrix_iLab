@@ -242,6 +242,7 @@ TEST(Matrix, Matrix_reorder) {
     ASSERT_EQ(m1, m2);
 }
 
+/*---------------------------------------------------------------*/
 TEST(Matrix, Matrix_sub_constructror) {
     std::vector<int> v1 = {0, 0, 1, 2, 2, 2, 1, 1, 0};
     Matrix<int> m1(3, 3, v1.begin(), v1.end());
@@ -258,6 +259,7 @@ TEST(Matrix, Matrix_sub_constructror) {
     D(m3.dump());
 }
 
+/*---------------------------------------------------------------*/
 TEST(Matrix, Matrix_reorder_submatrix) {
     std::vector<int> v1 = {1, 1, 1, 2, 0, 0, 1, 1, 0};
     Matrix<int> m1(3, 3, v1.begin(), v1.end());
@@ -280,6 +282,7 @@ TEST(Matrix, Matrix_reorder_submatrix) {
     ASSERT_EQ(m3, m2);
 }
 
+/*---------------------------------------------------------------*/
 TEST(Matrix, Matrix_upper) {
     std::vector<double> v1 = {1, 2, 4, 3, 8, 14, 2, 6, 13};
     Matrix<double> m1(3, 3, v1.begin(), v1.end());
@@ -293,6 +296,7 @@ TEST(Matrix, Matrix_upper) {
     ASSERT_EQ(m1, m2);
 }
 
+/*---------------------------------------------------------------*/
 TEST(Matrix, Matrix_lower) {
     std::vector<double> original = {1, 2, 4, 3, 8, 14, 2, 6, 13};
     Matrix<double> m_original(3, 3, original.begin(), original.end());
@@ -313,6 +317,7 @@ TEST(Matrix, Matrix_lower) {
     ASSERT_EQ(low, m_ans);
 }
 
+/*---------------------------------------------------------------*/
 TEST(Matrix, Matrix_decompose) {
     std::vector<double> v = {11, 9, 24, 2, 1, 5, 2, 6, 3, 17, 18, 1, 2, 5, 7, 1};
     Matrix<double> m(4, 4, v.begin(), v.end());
@@ -337,6 +342,7 @@ TEST(Matrix, Matrix_decompose) {
     ASSERT_EQ(U, mu);
 }
 
+/*---------------------------------------------------------------*/
 TEST(Matrix, Matrix_determinant_1) {
     std::vector<double> v = {11, 9, 24, 2, 1, 5, 2, 6, 3, 17, 18, 1, 2, 5, 7, 1};
     Matrix<double> m(4, 4, v.begin(), v.end());
@@ -349,6 +355,7 @@ TEST(Matrix, Matrix_determinant_1) {
     ASSERT_EQ(static_cast<int>(determinant), 284);
 }
 
+/*---------------------------------------------------------------*/
 TEST(Matrix, Matrix_determinant_2) {
     std::vector<double> v = {10, -23, 0, 43, 21,
                              11, 12, -34, 20, 21,
@@ -366,6 +373,47 @@ TEST(Matrix, Matrix_determinant_2) {
     ASSERT_EQ(static_cast<int>(determinant), -29052944);
 }
 
+TEST(Matrix, Matrix_determinant_3) {
+    std::vector<double> v = {1, 1, 0, 1, 1, 0, 1, 1, 0};
+    Matrix<double> m(3, 3, v.begin(), v.end());
+
+    auto LU = decompose(m);
+    Matrix<double> L = std::get<0>(LU);
+    Matrix<double> U = std::get<1>(LU);
+
+    double determinant = m.determinant();
+    D(std::cout << "Determinant: " << determinant << std::endl);
+    ASSERT_EQ(static_cast<int>(determinant), 0);
+}
+
+TEST(Matrix, Matrix_determinant_4) {
+    std::vector<double> v = {1, 1, 0, 1, 1, 0, 1000, 1000, 1000};
+    Matrix<double> m(3, 3, v.begin(), v.end());
+
+    auto LU = decompose(m);
+    Matrix<double> L = std::get<0>(LU);
+    Matrix<double> U = std::get<1>(LU);
+
+    double determinant = m.determinant();
+    D(std::cout << "Determinant: " << determinant << std::endl);
+    ASSERT_EQ(static_cast<int>(determinant), 0);
+}
+
+TEST(Matrix, Matrix_determinant_5) {
+    std::vector<double> v = {1, 1, 0, 1,
+                             2, 2, 0, 1,
+                             2, 2, 0, 2,
+                             4, 5, 6, 7};
+    Matrix<double> m(4, 4, v.begin(), v.end());
+
+    auto LU = decompose(m);
+    Matrix<double> L = std::get<0>(LU);
+    Matrix<double> U = std::get<1>(LU);
+
+    double determinant = m.determinant();
+    D(std::cout << "Determinant: " << determinant << std::endl);
+    ASSERT_EQ(static_cast<int>(determinant), 0);
+}
 
 int main(int argc, char** argv) {
     testing::InitGoogleTest(&argc, argv);

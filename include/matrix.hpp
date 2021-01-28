@@ -8,7 +8,7 @@
 #define DEBUG false
 
 #define D(stmt) if (DEBUG) {stmt;}
-#define PRECISION 1e-6
+#define PRECISION 1e-4
 
 //#define RAW_ALLOCATION
 
@@ -30,7 +30,7 @@
 14) add submatrix constructor DONE
 15) add rows swap func DONE
 16) add precision DONE
-17) add option for test generator to print newline character 
+17) add option for test generator to print newline character  DONE
 */
 
 /*---------------------------------------------------------------*/
@@ -199,6 +199,7 @@ bool reorder(Matrix<T>& matrix, int row, int col) {
     return true;
 }
 
+/*---------------------------------------------------------------*/
 template<typename T>
 void subtract(Matrix<T>& matrix, int current_row, int from_row, int pos, double factor) {
     int dim = matrix.get_rows();
@@ -207,6 +208,7 @@ void subtract(Matrix<T>& matrix, int current_row, int from_row, int pos, double 
     }
 }
 
+/*---------------------------------------------------------------*/
 template<typename T>
 void gauss(Matrix<T>& matrix) {
 
@@ -225,8 +227,13 @@ void gauss(Matrix<T>& matrix) {
         D(std::cout << "After reordering: " << std::endl);
         D(matrix.dump());
 
-        if (degenerate) {
-            return; // fix
+        while (degenerate) {
+            /* try next column if not the end */
+            if (current_col == dim) {
+                return;
+            }
+            current_col++;
+            degenerate = reorder(matrix, from_row, current_col);
         }
 
         T value = matrix[from_row][current_col];
@@ -272,7 +279,13 @@ Matrix<T> lower(Matrix<T>& original, Matrix<T>& upper) {
                 sum += upper[k][cols] * lower[rows][k];
             }
             D(std::cout << "Upper[" << cols << "] [" << cols << "] = " << upper[cols][cols] << std::endl);
-            T elem = (1.0 / upper[cols][cols]) * (original[rows][cols] - sum);
+            T elem = 0;
+            /* if matrix is degenerate */
+            if (std::abs(upper[cols][cols]) < PRECISION) {
+                elem = 0;
+            } else {
+                elem = (1.0 / upper[cols][cols]) * (original[rows][cols] - sum);
+            }
 
             lower[rows][cols] = elem;
             D(std::cout << "Calculating element [" << rows << "] [" << cols << "] " << std::endl);

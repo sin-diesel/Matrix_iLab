@@ -7,6 +7,7 @@
 #include <exception>
 #include "matrix.hpp"
 
+/*---------------------------------------------------------------*/
 class Tests {
     int lower_limit = -20;
     int upper_limit = 20;
