@@ -41,9 +41,15 @@ void Tests::generate() {
 
 int main(int argc, char** argv) {
 
-    if (argc != 2) {
-        std::cout << "Usage: ./testgen N, where N is matrix dimension" << std::endl;
+    if (argc < 2) {
+        std::cout << "Usage: ./testgen N [-newline], where N is matrix dimension,"
+                        "newline for printing \n character at the end of each row" << std::endl;
         exit(EXIT_FAILURE);
+    }
+
+    if (argc == 3) {
+        std::string arg(argv[2]);
+        
     }
 
     std::string input("./tests/random.dat");

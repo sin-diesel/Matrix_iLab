@@ -2,9 +2,10 @@
 
 #include <iostream>
 #include <iomanip>
+#include <cmath>
 #include "matrix_exc.h"
 
-#define DEBUG true
+#define DEBUG false
 
 #define D(stmt) if (DEBUG) {stmt;}
 #define PRECISION 1e-3
@@ -228,7 +229,8 @@ void gauss(Matrix<T>& matrix) {
         }
 
         T value = matrix[from_row][current_col];
-        assert(value > PRECISION);
+        D(std::cout << "Value[" << from_row << "] [" << current_col << "] = " << value << std::endl);
+        assert(std::abs(value) > PRECISION);
 
         for (int current_row = current_col + 1; current_row <= dim; ++current_row) {
             double factor = 1.0 * matrix[current_row][current_col] / value;
