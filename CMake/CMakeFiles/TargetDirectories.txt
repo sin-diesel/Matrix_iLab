@@ -1,0 +1,3 @@
+/home/stanislav/Programming_stuff/Projects/iLab_C++/Matrix_iLab/CMake/CMakeFiles/rebuild_cache.dir
+/home/stanislav/Programming_stuff/Projects/iLab_C++/Matrix_iLab/CMake/CMakeFiles/edit_cache.dir
+/home/stanislav/Programming_stuff/Projects/iLab_C++/Matrix_iLab/CMake/CMakeFiles/runTests.dir

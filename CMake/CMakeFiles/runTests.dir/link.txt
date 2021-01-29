@@ -1,0 +1,1 @@
+/usr/bin/c++    -rdynamic CMakeFiles/runTests.dir/home/stanislav/Programming_stuff/Projects/iLab_C++/Matrix_iLab/source/unit_tests.cpp.o  -o runTests  -Wl,-Bstatic -lgtest -Wl,-Bdynamic -lgtest_main -lpthread 

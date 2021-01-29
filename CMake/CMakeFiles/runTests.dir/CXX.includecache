@@ -1,0 +1,14 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/stanislav/Programming_stuff/Projects/iLab_C++/Matrix_iLab/source/unit_tests.cpp
+gtest/gtest.h
+-
+matrix.hpp
+/home/stanislav/Programming_stuff/Projects/iLab_C++/Matrix_iLab/source/matrix.hpp
+
